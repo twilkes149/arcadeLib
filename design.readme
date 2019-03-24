@@ -1,0 +1,58 @@
+*********************** Arcade Design ****************************
+This document is intended to layout the design of my arcade system.
+This system is inteded to be easily extendable to any arcade game.
+******************************************************************
+
+*********************** Modules **********************************
+- Color module
+  This module will be used to define RBGA colors used in sprites
+  Each arcade game project should have a file with the extension of .color
+  This file will define the colors used for the project as well as rgba values
+  See the following section for more information.
+
+  A color will be represented by a struct. The struct will have one 32 bit int.
+  This will define the rgba values. Functions will be provided to extract
+  the red, gree, blue, and alpha values from this int.
+
+- frame module
+  A frame is the most basic form of a sprite. It will contain an array of
+  c-strings. Each digit in the c-string will represent a color. When drawing
+  frame, the video module will take a line of the c-string and convert it
+  to pixel values which will then be writen to the hdmi buffer;
+
+- Sprite module
+  A sprite is an object that will be drawn to the screen
+  Each sprite will be contained within an individual file
+  A sprite will be defined in a sort of 'bitmap'
+
+  There will be one letter for each pixel that will define the color of that pizel
+
+  For example a single line of a sprite could be 00ggggrrrgggg00
+  In order for the sprite to be drawn, there must be rgba values defined for each
+  'pixel': 0,g, and r. In this case there might be a file called game.colors that defines
+  the rbga values for each pixel value. Each pixel will be on a single line with the pixel alais
+  as the first entry, then the rbga values seperated by commas. For example:
+    0: 0,0,0,0
+    g: 0,255,0,0
+    r: 255,0,0,0
+
+  A sprite will have the following parameters:
+  * row & col
+  * height & width (used for collisions)
+  * scale (used to increase the relative size of the image drawn)
+  * an array of frames (used to draw the sprite)
+
+- Video module
+  This module will be a user space wrapper for hdmi output
+  Functionality:
+    * write pixel(row, col)
+    * write a line (solid color, or based on an array of pixel colors)
+    * write a sprite(row,col, sprite*, scale)
+
+************************** File Structure ************************
+- pacman
+  - src
+    - sprites
+    pacman.color
+    <other code>
+  

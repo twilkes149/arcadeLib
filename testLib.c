@@ -1,15 +1,20 @@
 #include "./lib/video.h"
+#include "./lib/color.h"
 #include <stdlib.h>
 #include <stdint.h>
 
-int main() {
+int main(void) {	
+	uint32_t errorCode = 32;	
+	color_init("test.color", errorCode);
+	
 	video_init();
 	
-	for (uint32_t i = video_getScreenWidth()/4; i < video_getScreenWidth()/2; i++) {
-		video_drawPixel(video_getScreenHeight()/2, i, 0x0000FF00);
+	uint32_t color = color_getColor('t');
+	
+	if (color != errorCode) {				
+		video_drawLine(video_getScreenHeight()/3, video_getScreenWidth()/2, 80, color);
 	}
 	
-	video_drawLine(video_getScreenHeight()/3, video_getScreenWidth()/2, 40, 0xFF000000);
-	
 	video_close();
+	return 0;
 }

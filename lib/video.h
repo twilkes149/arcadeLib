@@ -6,6 +6,8 @@
 #include <fcntl.h>
 #include <linux/fb.h>
 #include <sys/mman.h>
+#include "frame.h"
+#include "color.h"
 
 #define VIDEO_ERROR -1
 #define VIDEO_SUCCESS 0
@@ -30,6 +32,8 @@ void video_drawPixel(uint16_t row, uint16_t col, uint32_t color);
 void video_drawLineColor(uint16_t row, uint16_t col, uint16_t length, char color);
 
 void video_drawLine(uint16_t row, uint16_t col, uint16_t length, uint32_t color);
+
+void video_drawFrame(uint16_t row, uint16_t col, struct frame* _frame);//draws a frame to the screen
 
 //function to clean up things with the video module
 void video_close();

@@ -1,6 +1,7 @@
 #include "video.h"
 
 #define BYTE_SIZE 8
+#define WHITESPACE 32
 
 static int fbfd = 0; // framebuffer filedescriptor
 static struct fb_var_screeninfo var_info;
@@ -67,10 +68,57 @@ void video_drawPixel(uint16_t row, uint16_t col, uint32_t color) {
 	fbp[col+3 + row*lineLength] = 0x00;//write alpha
 }
 
+//function to draw a pixel by its key color
+void video_drawPixelColor(uint16_t row, uint16_t col, char color) {
+	uint32_t c = color_getColor(color);
+	video_drawPixel(row, col, c);
+}
+
 //function to draw a line of length <length> and color <color>
 void video_drawLine(uint16_t row, uint16_t col, uint16_t length, uint32_t color) {
 	for (uint32_t i = 0; i < length; i++) {
 		video_drawPixel(row, i+col, color);
+	}
+}
+
+//function to draw a frame to the screen
+void video_drawFrame(uint16_t row, uint16_t col, struct frame* _frame) {
+
+	//resize frame to match the scale we want to draw it in
+	uint16_t resizedLength = _frame->length*(_frame->scale*_frame->scale);
+	
+	char* resizedFrame = (char*) malloc(sizeof(char) * resizedLength);
+	
+	uint16_t prevLineIndex = 0, rIndex = 0;
+	//resize the frame
+	for (uint16_t globalIndex = 0; globalIndex < _frame->length; globalIndex++) {
+		if (_frame->lines[globalIndex] == '\n') {//if we encounted a new line, we need to copy this line <scale> times
+			
+			for (uint16_t scale = 0; scale < _frame->scale; scale++) {//copy the line <scale> times				
+				for (uint16_t line = prevLineIndex; line <= globalIndex; line++) {//for each pixel on this line					
+					for (uint16_t innerScale = 0; innerScale < _frame->scale; innerScale++) {//copy each pixel <scale> times
+						resizedFrame[rIndex] = _frame->lines[line];
+						rIndex++;
+						
+						if (_frame->lines[line] == '\n') {//we only want to copy the newline once
+							break;
+						}
+					}					
+				}
+			}
+			prevLineIndex = globalIndex+1;
+		}
+	}
+	//draw the new frame
+	for (uint16_t r = 0, c = 0, index = 0; index < resizedLength; index++) {//for each 'pixel'
+		if (resizedFrame[index] == '\n') {//if we got to a newline
+			r++;
+			c = 0;
+		}
+		else if (resizedFrame[index] > WHITESPACE){
+			video_drawPixelColor(row+r, col+c, resizedFrame[index]);
+			c++;
+		}
 	}
 }
 

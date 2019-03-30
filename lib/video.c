@@ -87,27 +87,32 @@ void video_drawFrame(uint16_t row, uint16_t col, struct frame* _frame) {
 	//resize frame to match the scale we want to draw it in
 	uint16_t resizedLength = _frame->length*(_frame->scale*_frame->scale);
 	
-	char* resizedFrame = (char*) malloc(sizeof(char) * resizedLength);
+	char* resizedFrame = _frame->resizedLines;
 	
-	uint16_t prevLineIndex = 0, rIndex = 0;
-	//resize the frame
-	for (uint16_t globalIndex = 0; globalIndex < _frame->length; globalIndex++) {
-		if (_frame->lines[globalIndex] == '\n') {//if we encounted a new line, we need to copy this line <scale> times
-			
-			for (uint16_t scale = 0; scale < _frame->scale; scale++) {//copy the line <scale> times				
-				for (uint16_t line = prevLineIndex; line <= globalIndex; line++) {//for each pixel on this line					
-					for (uint16_t innerScale = 0; innerScale < _frame->scale; innerScale++) {//copy each pixel <scale> times
-						resizedFrame[rIndex] = _frame->lines[line];
-						rIndex++;
-						
-						if (_frame->lines[line] == '\n') {//we only want to copy the newline once
-							break;
-						}
-					}					
+	if (_frame->resizedLines == NULL) { //if we need to resize this frame
+		resizedFrame = (char*) malloc(sizeof(char) * resizedLength);		
+		uint16_t prevLineIndex = 0, rIndex = 0;
+		
+		//resize the frame
+		for (uint16_t globalIndex = 0; globalIndex < _frame->length; globalIndex++) {
+			if (_frame->lines[globalIndex] == '\n') {//if we encounted a new line, we need to copy this line <scale> times
+				
+				for (uint16_t scale = 0; scale < _frame->scale; scale++) {//copy the line <scale> times				
+					for (uint16_t line = prevLineIndex; line <= globalIndex; line++) {//for each pixel on this line					
+						for (uint16_t innerScale = 0; innerScale < _frame->scale; innerScale++) {//copy each pixel <scale> times
+							resizedFrame[rIndex] = _frame->lines[line];
+							rIndex++;
+							
+							if (_frame->lines[line] == '\n') {//we only want to copy the newline once
+								break;
+							}
+						}					
+					}
 				}
+				prevLineIndex = globalIndex+1;
 			}
-			prevLineIndex = globalIndex+1;
 		}
+		_frame->resizedLines = resizedFrame;//save the resized frame
 	}
 	//draw the new frame
 	for (uint16_t r = 0, c = 0, index = 0; index < resizedLength; index++) {//for each 'pixel'

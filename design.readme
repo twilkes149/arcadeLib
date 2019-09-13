@@ -19,12 +19,7 @@ This system is inteded to be easily extendable to any arcade game.
   c-strings. Each digit in the c-string will represent a color. When drawing
   frame, the video module will take a line of the c-string and convert it
   to pixel values which will then be writen to the hdmi buffer;
-
-- Sprite module
-  A sprite is an object that will be drawn to the screen
-  Each sprite will be contained within an individual file
-  A sprite will be defined in a sort of 'bitmap'
-
+  
   There will be one letter for each pixel that will define the color of that pizel
 
   For example a single line of a sprite could be 00ggggrrrgggg00
@@ -36,11 +31,31 @@ This system is inteded to be easily extendable to any arcade game.
     g: 0,255,0,0
     r: 255,0,0,0
 
+- Sprite module
+  A sprite is an object that will be drawn to the screen
+  Each sprite will be contained within a directory. A sprite can have a series of frames
+  through which it can be animated. There should be support to have different animation sequences
+  in case a sprite has different frame sequences for moving different directions. These sequences
+  will each be contained within the sprite's directory, with the frames for the sequence within
+  the sub-directories. The following might be an organization structure for a Pacman sprite:
+  - Pacman
+	- left
+		- open.frame
+		- close.frame
+	- right
+		- open.frame
+		- right.frame
+	- ...
+	
+
   A sprite will have the following parameters:
   * row & col
   * height & width (used for collisions)
   * scale (used to increase the relative size of the image drawn)
-  * an array of frames (used to draw the sprite)
+  * animation sequence
+  * current frame index
+  * an array of animation sequences 
+	- where an animation sequence is an array of frames
 
 - Video module
   This module will be a user space wrapper for hdmi output

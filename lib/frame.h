@@ -5,9 +5,9 @@
 #ifndef __FRAME__
 #define __FRAME__
 struct frame {
-	char* lines; //a c-string that contains color keys for each pixel of this sprite 
-	char* resizedLines; //when draw, if the frame needs to be resized, this will hold the resized frame
-	uint16_t length;//the number of characters in this frame
+	char* lines; 		// a c-string that contains color keys for each pixel of this sprite 
+	char* resizedLines; // when draw, if the frame needs to be resized, this will hold the resized frame
+	uint16_t length;	// the number of characters in this frame
 	uint8_t scale;
 };
 
